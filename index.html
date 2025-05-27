@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ねこから逃げろ - Escape from the Cat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        main {
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .instructions {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>ねこから逃げろ</h1>
+        <div id="game-container"></div>
+        <div class="instructions">
+            <p>矢印キーまたはWASDで移動してください</p>
+            <p>ねこに捕まらないように逃げ回ってください！</p>
+            <p>クリックまたはスペースキーでゲームを開始/リスタート</p>
+        </div>
+    </main>
+    <script src="game.js"></script>
+</body>
+</html>
