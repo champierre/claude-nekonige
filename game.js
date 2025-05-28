@@ -5,8 +5,16 @@ let score = 0;
 let gameTime = 0;
 let lastCatchTime = 0;
 
+// タッチ操作用の変数
+let touchTarget = null;
+let isMovingToTouch = false;
+
 function setup() {
-    let canvas = createCanvas(800, 600);
+    // レスポンシブなキャンバスサイズ
+    let canvasWidth = min(800, windowWidth - 40);
+    let canvasHeight = min(600, windowHeight - 200);
+    
+    let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent('game-container');
     
     // プレイヤーの初期位置
@@ -226,6 +234,23 @@ function updatePlayer() {
         newY += player.speed;
     }
     
+    // タッチ操作での移動
+    if (isMovingToTouch && touchTarget) {
+        let dx = touchTarget.x - player.x;
+        let dy = touchTarget.y - player.y;
+        let distance = sqrt(dx * dx + dy * dy);
+        
+        if (distance > 5) { // 目標地点に近づいたら停止
+            // 目標地点の方向に移動
+            newX += (dx / distance) * player.speed;
+            newY += (dy / distance) * player.speed;
+        } else {
+            // 目標地点に到達したらタッチ移動を停止
+            isMovingToTouch = false;
+            touchTarget = null;
+        }
+    }
+    
     // 画面境界のチェック
     player.x = constrain(newX, player.size/2, width - player.size/2);
     player.y = constrain(newY, player.size/2, height - player.size/2);
@@ -269,6 +294,23 @@ function checkCollision() {
 function mousePressed() {
     if (gameState === 'start' || gameState === 'gameOver') {
         startGame();
+    } else if (gameState === 'playing') {
+        // ゲーム中のクリック/タップでプレイヤーを移動
+        touchTarget = { x: mouseX, y: mouseY };
+        isMovingToTouch = true;
+    }
+}
+
+// タッチイベントの処理
+function touchStarted() {
+    if (gameState === 'start' || gameState === 'gameOver') {
+        startGame();
+        return false; // デフォルトのタッチ動作を防ぐ
+    } else if (gameState === 'playing') {
+        // ゲーム中のタッチでプレイヤーを移動
+        touchTarget = { x: mouseX, y: mouseY };
+        isMovingToTouch = true;
+        return false; // デフォルトのタッチ動作を防ぐ
     }
 }
 
@@ -285,6 +327,10 @@ function startGame() {
     score = 0;
     gameTime = 0;
     
+    // タッチ移動をリセット
+    touchTarget = null;
+    isMovingToTouch = false;
+    
     // プレイヤーの位置をリセット
     player.x = width / 2;
     player.y = height / 2;
@@ -299,4 +345,17 @@ function startGame() {
         cat.x = random(50, width - 50);
         cat.y = random(50, height - 50);
     }
+}
+
+// ウィンドウサイズ変更時の処理（モバイルの画面回転など）
+function windowResized() {
+    let canvasWidth = min(800, windowWidth - 40);
+    let canvasHeight = min(600, windowHeight - 200);
+    resizeCanvas(canvasWidth, canvasHeight);
+    
+    // プレイヤーとねこの位置を新しいキャンバスサイズに合わせて調整
+    player.x = constrain(player.x, player.size/2, width - player.size/2);
+    player.y = constrain(player.y, player.size/2, height - player.size/2);
+    cat.x = constrain(cat.x, cat.size/2, width - cat.size/2);
+    cat.y = constrain(cat.y, cat.size/2, height - cat.size/2);
 }
